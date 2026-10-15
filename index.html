@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Personal Values Checklist • Clickable Edition</title>
+<style>
+  :root {
+    --bg-page: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --border-subtle: #cbd5e1;
+    --v-color: #15803d;
+    --q-color: #b45309;
+    --n-color: #475569;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", -system-ui, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 14px 12px 120px 12px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app-header {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 18px 16px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+  }
+  .app-header h1 {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    margin: 0 0 4px 0;
+  }
+  .app-header p {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.35;
+  }
+  .sticky-bar {
+    position: sticky;
+    top: 10px;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 8px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  }
+  .v-limit-badge {
+    font-size: 13px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #dcfce7;
+    color: var(--v-color);
+    border: 1px solid #86efac;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .v-limit-badge.limit-reached {
+    background: #fef08a;
+    color: #854d0e;
+    border-color: #facc15;
+  }
+  .counts-group {
+    display: flex;
+    gap: 6px;
+  }
+  .count-pill {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .pill-q { background: #fef3c7; color: var(--q-color); }
+  .pill-n { background: #e2e8f0; color: var(--n-color); }
+
+  /* Fully Selectable Value Card */
+  .value-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .value-card:active {
+    transform: scale(0.99);
+  }
+  .value-card.card-selected-v {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    box-shadow: 0 3px 10px rgba(22, 163, 74, 0.15);
+  }
+  .value-card.card-selected-q {
+    border-color: #d97706;
+    background: #fffbeb;
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.15);
+  }
+  .value-card.card-selected-n {
+    border-color: #64748b;
+    background: #f1f5f9;
+    box-shadow: 0 3px 10px rgba(100, 116, 139, 0.15);
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+  }
+  .title-area {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .val-num {
+    font-size: 13px;
+    font-weight: 800;
+    color: #94a3b8;
+  }
+  .val-title {
+    font-size: 16.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .status-tag {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    display: none;
+  }
+  .tag-v { display: inline-block; background: #15803d; color: #fff; }
+  .tag-q { display: inline-block; background: #b45309; color: #fff; }
+  .tag-n { display: inline-block; background: #475569; color: #fff; }
+
+  .val-desc {
+    font-size: 13.5px;
+    color: #475569;
+    line-height: 1.35;
+    margin-bottom: 12px;
+  }
+
+  /* Explicit Option Selector Pills */
+  .button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .choice-box {
+    border: 1.8px solid var(--border-subtle);
+    background: #ffffff;
+    padding: 10px 4px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s ease;
+  }
+  .choice-box:active {
+    transform: scale(0.95);
+  }
+  .box-letter {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .box-label {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .box-v { color: var(--v-color); }
+  .box-q { color: var(--q-color); }
+  .box-n { color: var(--n-color); }
+
+  .choice-box.selected-v {
+    background: #15803d !important;
+    border-color: #15803d !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(21, 128, 61, 0.35);
+  }
+  .choice-box.selected-q {
+    background: #b45309 !important;
+    border-color: #b45309 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(180, 83, 9, 0.35);
+  }
+  .choice-box.selected-n {
+    background: #475569 !important;
+    border-color: #475569 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(71, 85, 105, 0.35);
+  }
+
+  .custom-field {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 8px;
+    font-size: 13.5px;
+    margin-bottom: 8px;
+    background: #f8fafc;
+  }
+
+  /* Sticky Footer */
+  .footer-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 12px)) 14px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 10px;
+    z-index: 50;
+  }
+  .footer-btn {
+    flex: 1;
+    border-radius: 12px;
+    padding: 14px 10px;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+  }
+  .btn-export {
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+  }
+  .btn-reset {
+    flex: 0.35;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid var(--border-subtle);
+  }
+
+  /* Swap Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+  }
+  .modal-sheet {
+    background: #ffffff;
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-height: 85vh;
+    padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 14px)) 16px;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    animation: slideUp 0.25s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .sheet-header {
+    text-align: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 12px;
+  }
+  .sheet-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+  }
+  .sheet-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+  }
+  .candidate-banner {
+    background: #f0fdf4;
+    border: 1.5px solid #86efac;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #166534;
+  }
+  .swap-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .swap-item {
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .swap-item:active {
+    background: #fee2e2;
+    border-color: #ef4444;
+  }
+  .swap-info-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .swap-info-desc {
+    font-size: 11.5px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .swap-btn-label {
+    background: #ffffff;
+    border: 1.5px solid #ef4444;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    margin-left: 10px;
+  }
+  .sheet-cancel {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    width: 100%;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  @media print {
+    .sticky-bar, .footer-nav, .modal-overlay { display: none !important; }
+    body { padding: 0; background: #fff; }
+    .value-card { break-inside: avoid; border: 1px solid #cbd5e1 !important; box-shadow: none; margin-bottom: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>Personal Values Checklist</h1>
+  <p>Tap any card to select as Very Important (V), or select Q / N. Limit of 5 "V" priorities with instant swap.</p>
+</div>
+
+<div class="sticky-bar">
+  <div class="v-limit-badge" id="v-badge">V: 0 / 5 Max</div>
+  <div class="counts-group">
+    <div class="count-pill pill-q" id="stat-q">Q: 0</div>
+    <div class="count-pill pill-n" id="stat-n">N: 0</div>
+  </div>
+</div>
+
+<div id="values-list">
+
+  <div class="value-card" id="card-1" data-num="1" data-name="Acceptance" onclick="handleCardClick(event, 1)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">01</span>
+        <span class="val-title">Acceptance</span>
+      </div>
+      <span class="status-tag" id="tag-1"></span>
+    </div>
+    <div class="val-desc">to be open to and accepting of myself, others, life etc</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-1-V" onclick="event.stopPropagation(); handleChoice(1, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-1-Q" onclick="event.stopPropagation(); handleChoice(1, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-1-N" onclick="event.stopPropagation(); handleChoice(1, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-2" data-num="2" data-name="Adventure" onclick="handleCardClick(event, 2)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">02</span>
+        <span class="val-title">Adventure</span>
+      </div>
+      <span class="status-tag" id="tag-2"></span>
+    </div>
+    <div class="val-desc">to be adventurous; to actively seek, create, or explore novel or stimulating experiences</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-2-V" onclick="event.stopPropagation(); handleChoice(2, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-2-Q" onclick="event.stopPropagation(); handleChoice(2, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-2-N" onclick="event.stopPropagation(); handleChoice(2, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-3" data-num="3" data-name="Assertiveness" onclick="handleCardClick(event, 3)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">03</span>
+        <span class="val-title">Assertiveness</span>
+      </div>
+      <span class="status-tag" id="tag-3"></span>
+    </div>
+    <div class="val-desc">to respectfully stand up for my rights and request what I want</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-3-V" onclick="event.stopPropagation(); handleChoice(3, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-3-Q" onclick="event.stopPropagation(); handleChoice(3, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-3-N" onclick="event.stopPropagation(); handleChoice(3, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-4" data-num="4" data-name="Authenticity" onclick="handleCardClick(event, 4)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">04</span>
+        <span class="val-title">Authenticity</span>
+      </div>
+      <span class="status-tag" id="tag-4"></span>
+    </div>
+    <div class="val-desc">to be authentic, genuine, real; to be true to myself</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-4-V" onclick="event.stopPropagation(); handleChoice(4, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-4-Q" onclick="event.stopPropagation(); handleChoice(4, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-4-N" onclick="event.stopPropagation(); handleChoice(4, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-5" data-num="5" data-name="Beauty" onclick="handleCardClick(event, 5)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">05</span>
+        <span class="val-title">Beauty</span>
+      </div>
+      <span class="status-tag" id="tag-5"></span>
+    </div>
+    <div class="val-desc">to appreciate, create, nurture or cultivate beauty in myself, others, the environment etc</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-5-V" onclick="event.stopPropagation(); handleChoice(5, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-5-Q" onclick="event.stopPropagation(); handleChoice(5, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-5-N" onclick="event.stopPropagation(); handleChoice(5, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-6" data-num="6" data-name="Caring" onclick="handleCardClick(event, 6)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">06</span>
+        <span class="val-title">Caring</span>
+      </div>
+      <span class="status-tag" id="tag-6"></span>
+    </div>
+    <div class="val-desc">to be caring towards myself, others, the environment etc</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-6-V" onclick="event.stopPropagation(); handleChoice(6, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-6-Q" onclick="event.stopPropagation(); handleChoice(6, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-6-N" onclick="event.stopPropagation(); handleChoice(6, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-7" data-num="7" data-name="Challenge" onclick="handleCardClick(event, 7)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">07</span>
+        <span class="val-title">Challenge</span>
+      </div>
+      <span class="status-tag" id="tag-7"></span>
+    </div>
+    <div class="val-desc">to keep challenging myself to grow, learn, improve</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-7-V" onclick="event.stopPropagation(); handleChoice(7, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-7-Q" onclick="event.stopPropagation(); handleChoice(7, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-7-N" onclick="event.stopPropagation(); handleChoice(7, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-8" data-num="8" data-name="Compassion" onclick="handleCardClick(event, 8)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">08</span>
+        <span class="val-title">Compassion</span>
+      </div>
+      <span class="status-tag" id="tag-8"></span>
+    </div>
+    <div class="val-desc">to act with kindness towards those who are suffering</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-8-V" onclick="event.stopPropagation(); handleChoice(8, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-8-Q" onclick="event.stopPropagation(); handleChoice(8, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-8-N" onclick="event.stopPropagation(); handleChoice(8, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-9" data-num="9" data-name="Connection" onclick="handleCardClick(event, 9)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">09</span>
+        <span class="val-title">Connection</span>
+      </div>
+      <span class="status-tag" id="tag-9"></span>
+    </div>
+    <div class="val-desc">to engage fully in whatever I am doing, and be fully present with others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-9-V" onclick="event.stopPropagation(); handleChoice(9, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-9-Q" onclick="event.stopPropagation(); handleChoice(9, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-9-N" onclick="event.stopPropagation(); handleChoice(9, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-10" data-num="10" data-name="Contribution" onclick="handleCardClick(event, 10)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">10</span>
+        <span class="val-title">Contribution</span>
+      </div>
+      <span class="status-tag" id="tag-10"></span>
+    </div>
+    <div class="val-desc">to contribute, help, assist, or make a positive difference to myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-10-V" onclick="event.stopPropagation(); handleChoice(10, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-10-Q" onclick="event.stopPropagation(); handleChoice(10, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-10-N" onclick="event.stopPropagation(); handleChoice(10, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-11" data-num="11" data-name="Conformity" onclick="handleCardClick(event, 11)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">11</span>
+        <span class="val-title">Conformity</span>
+      </div>
+      <span class="status-tag" id="tag-11"></span>
+    </div>
+    <div class="val-desc">to be respectful and obedient of rules and obligations</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-11-V" onclick="event.stopPropagation(); handleChoice(11, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-11-Q" onclick="event.stopPropagation(); handleChoice(11, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-11-N" onclick="event.stopPropagation(); handleChoice(11, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-12" data-num="12" data-name="Cooperation" onclick="handleCardClick(event, 12)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">12</span>
+        <span class="val-title">Cooperation</span>
+      </div>
+      <span class="status-tag" id="tag-12"></span>
+    </div>
+    <div class="val-desc">to be cooperative and collaborative with others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-12-V" onclick="event.stopPropagation(); handleChoice(12, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-12-Q" onclick="event.stopPropagation(); handleChoice(12, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-12-N" onclick="event.stopPropagation(); handleChoice(12, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-13" data-num="13" data-name="Courage" onclick="handleCardClick(event, 13)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">13</span>
+        <span class="val-title">Courage</span>
+      </div>
+      <span class="status-tag" id="tag-13"></span>
+    </div>
+    <div class="val-desc">to be courageous or brave; to persist in the face of fear, threat, or difficulty</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-13-V" onclick="event.stopPropagation(); handleChoice(13, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-13-Q" onclick="event.stopPropagation(); handleChoice(13, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-13-N" onclick="event.stopPropagation(); handleChoice(13, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-14" data-num="14" data-name="Creativity" onclick="handleCardClick(event, 14)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">14</span>
+        <span class="val-title">Creativity</span>
+      </div>
+      <span class="status-tag" id="tag-14"></span>
+    </div>
+    <div class="val-desc">to be creative or innovative</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-14-V" onclick="event.stopPropagation(); handleChoice(14, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-14-Q" onclick="event.stopPropagation(); handleChoice(14, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-14-N" onclick="event.stopPropagation(); handleChoice(14, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-15" data-num="15" data-name="Curiosity" onclick="handleCardClick(event, 15)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">15</span>
+        <span class="val-title">Curiosity</span>
+      </div>
+      <span class="status-tag" id="tag-15"></span>
+    </div>
+    <div class="val-desc">to be curious, open-minded and interested; to explore and discover</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-15-V" onclick="event.stopPropagation(); handleChoice(15, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-15-Q" onclick="event.stopPropagation(); handleChoice(15, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-15-N" onclick="event.stopPropagation(); handleChoice(15, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-16" data-num="16" data-name="Encouragement" onclick="handleCardClick(event, 16)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">16</span>
+        <span class="val-title">Encouragement</span>
+      </div>
+      <span class="status-tag" id="tag-16"></span>
+    </div>
+    <div class="val-desc">to encourage and reward behaviour that I value in myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-16-V" onclick="event.stopPropagation(); handleChoice(16, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-16-Q" onclick="event.stopPropagation(); handleChoice(16, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-16-N" onclick="event.stopPropagation(); handleChoice(16, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-17" data-num="17" data-name="Equality" onclick="handleCardClick(event, 17)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">17</span>
+        <span class="val-title">Equality</span>
+      </div>
+      <span class="status-tag" id="tag-17"></span>
+    </div>
+    <div class="val-desc">to treat others as equal to myself, and vice-versa</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-17-V" onclick="event.stopPropagation(); handleChoice(17, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-17-Q" onclick="event.stopPropagation(); handleChoice(17, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-17-N" onclick="event.stopPropagation(); handleChoice(17, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-18" data-num="18" data-name="Excitement" onclick="handleCardClick(event, 18)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">18</span>
+        <span class="val-title">Excitement</span>
+      </div>
+      <span class="status-tag" id="tag-18"></span>
+    </div>
+    <div class="val-desc">to seek, create and engage in activities that are exciting, stimulating or thrilling</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-18-V" onclick="event.stopPropagation(); handleChoice(18, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-18-Q" onclick="event.stopPropagation(); handleChoice(18, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-18-N" onclick="event.stopPropagation(); handleChoice(18, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-19" data-num="19" data-name="Fairness" onclick="handleCardClick(event, 19)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">19</span>
+        <span class="val-title">Fairness</span>
+      </div>
+      <span class="status-tag" id="tag-19"></span>
+    </div>
+    <div class="val-desc">to be fair to myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-19-V" onclick="event.stopPropagation(); handleChoice(19, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-19-Q" onclick="event.stopPropagation(); handleChoice(19, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-19-N" onclick="event.stopPropagation(); handleChoice(19, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-20" data-num="20" data-name="Fitness" onclick="handleCardClick(event, 20)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">20</span>
+        <span class="val-title">Fitness</span>
+      </div>
+      <span class="status-tag" id="tag-20"></span>
+    </div>
+    <div class="val-desc">to maintain or improve my fitness; to look after my physical and mental health and wellbeing</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-20-V" onclick="event.stopPropagation(); handleChoice(20, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-20-Q" onclick="event.stopPropagation(); handleChoice(20, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-20-N" onclick="event.stopPropagation(); handleChoice(20, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-21" data-num="21" data-name="Flexibility" onclick="handleCardClick(event, 21)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">21</span>
+        <span class="val-title">Flexibility</span>
+      </div>
+      <span class="status-tag" id="tag-21"></span>
+    </div>
+    <div class="val-desc">to adjust and adapt readily to changing circumstances</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-21-V" onclick="event.stopPropagation(); handleChoice(21, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-21-Q" onclick="event.stopPropagation(); handleChoice(21, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-21-N" onclick="event.stopPropagation(); handleChoice(21, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-22" data-num="22" data-name="Freedom" onclick="handleCardClick(event, 22)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">22</span>
+        <span class="val-title">Freedom</span>
+      </div>
+      <span class="status-tag" id="tag-22"></span>
+    </div>
+    <div class="val-desc">to live freely; to choose how I live and behave, or help others do likewise</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-22-V" onclick="event.stopPropagation(); handleChoice(22, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-22-Q" onclick="event.stopPropagation(); handleChoice(22, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-22-N" onclick="event.stopPropagation(); handleChoice(22, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-23" data-num="23" data-name="Friendliness" onclick="handleCardClick(event, 23)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">23</span>
+        <span class="val-title">Friendliness</span>
+      </div>
+      <span class="status-tag" id="tag-23"></span>
+    </div>
+    <div class="val-desc">to be friendly, companionable, or agreeable towards others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-23-V" onclick="event.stopPropagation(); handleChoice(23, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-23-Q" onclick="event.stopPropagation(); handleChoice(23, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-23-N" onclick="event.stopPropagation(); handleChoice(23, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-24" data-num="24" data-name="Forgiveness" onclick="handleCardClick(event, 24)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">24</span>
+        <span class="val-title">Forgiveness</span>
+      </div>
+      <span class="status-tag" id="tag-24"></span>
+    </div>
+    <div class="val-desc">to be forgiving towards myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-24-V" onclick="event.stopPropagation(); handleChoice(24, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-24-Q" onclick="event.stopPropagation(); handleChoice(24, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-24-N" onclick="event.stopPropagation(); handleChoice(24, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-25" data-num="25" data-name="Fun" onclick="handleCardClick(event, 25)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">25</span>
+        <span class="val-title">Fun</span>
+      </div>
+      <span class="status-tag" id="tag-25"></span>
+    </div>
+    <div class="val-desc">to be fun-loving; to seek, create, and engage in fun-filled activities</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-25-V" onclick="event.stopPropagation(); handleChoice(25, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-25-Q" onclick="event.stopPropagation(); handleChoice(25, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-25-N" onclick="event.stopPropagation(); handleChoice(25, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-26" data-num="26" data-name="Generosity" onclick="handleCardClick(event, 26)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">26</span>
+        <span class="val-title">Generosity</span>
+      </div>
+      <span class="status-tag" id="tag-26"></span>
+    </div>
+    <div class="val-desc">to be generous, sharing and giving, to myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-26-V" onclick="event.stopPropagation(); handleChoice(26, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-26-Q" onclick="event.stopPropagation(); handleChoice(26, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-26-N" onclick="event.stopPropagation(); handleChoice(26, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-27" data-num="27" data-name="Gratitude" onclick="handleCardClick(event, 27)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">27</span>
+        <span class="val-title">Gratitude</span>
+      </div>
+      <span class="status-tag" id="tag-27"></span>
+    </div>
+    <div class="val-desc">to be grateful for and appreciative of the positive aspects of myself, others and life</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-27-V" onclick="event.stopPropagation(); handleChoice(27, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-27-Q" onclick="event.stopPropagation(); handleChoice(27, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-27-N" onclick="event.stopPropagation(); handleChoice(27, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-28" data-num="28" data-name="Honesty" onclick="handleCardClick(event, 28)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">28</span>
+        <span class="val-title">Honesty</span>
+      </div>
+      <span class="status-tag" id="tag-28"></span>
+    </div>
+    <div class="val-desc">to be honest, truthful, and sincere with myself and others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-28-V" onclick="event.stopPropagation(); handleChoice(28, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-28-Q" onclick="event.stopPropagation(); handleChoice(28, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-28-N" onclick="event.stopPropagation(); handleChoice(28, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-29" data-num="29" data-name="Humour" onclick="handleCardClick(event, 29)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">29</span>
+        <span class="val-title">Humour</span>
+      </div>
+      <span class="status-tag" id="tag-29"></span>
+    </div>
+    <div class="val-desc">to see and appreciate the humorous side of life</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-29-V" onclick="event.stopPropagation(); handleChoice(29, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-29-Q" onclick="event.stopPropagation(); handleChoice(29, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-29-N" onclick="event.stopPropagation(); handleChoice(29, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-30" data-num="30" data-name="Humility" onclick="handleCardClick(event, 30)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">30</span>
+        <span class="val-title">Humility</span>
+      </div>
+      <span class="status-tag" id="tag-30"></span>
+    </div>
+    <div class="val-desc">to be humble or modest; to let my achievements speak for themselves</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-30-V" onclick="event.stopPropagation(); handleChoice(30, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-30-Q" onclick="event.stopPropagation(); handleChoice(30, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-30-N" onclick="event.stopPropagation(); handleChoice(30, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-31" data-num="31" data-name="Industry" onclick="handleCardClick(event, 31)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">31</span>
+        <span class="val-title">Industry</span>
+      </div>
+      <span class="status-tag" id="tag-31"></span>
+    </div>
+    <div class="val-desc">to be industrious, hard-working, dedicated</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-31-V" onclick="event.stopPropagation(); handleChoice(31, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-31-Q" onclick="event.stopPropagation(); handleChoice(31, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-31-N" onclick="event.stopPropagation(); handleChoice(31, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-32" data-num="32" data-name="Independence" onclick="handleCardClick(event, 32)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">32</span>
+        <span class="val-title">Independence</span>
+      </div>
+      <span class="status-tag" id="tag-32"></span>
+    </div>
+    <div class="val-desc">to be self-supportive, and choose my own way of doing things</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-32-V" onclick="event.stopPropagation(); handleChoice(32, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-32-Q" onclick="event.stopPropagation(); handleChoice(32, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-32-N" onclick="event.stopPropagation(); handleChoice(32, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-33" data-num="33" data-name="Intimacy" onclick="handleCardClick(event, 33)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">33</span>
+        <span class="val-title">Intimacy</span>
+      </div>
+      <span class="status-tag" id="tag-33"></span>
+    </div>
+    <div class="val-desc">to open up, reveal, and share myself -- emotionally or physically – in my close personal relationships</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-33-V" onclick="event.stopPropagation(); handleChoice(33, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-33-Q" onclick="event.stopPropagation(); handleChoice(33, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-33-N" onclick="event.stopPropagation(); handleChoice(33, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-34" data-num="34" data-name="Justice" onclick="handleCardClick(event, 34)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">34</span>
+        <span class="val-title">Justice</span>
+      </div>
+      <span class="status-tag" id="tag-34"></span>
+    </div>
+    <div class="val-desc">to uphold justice and fairness</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-34-V" onclick="event.stopPropagation(); handleChoice(34, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-34-Q" onclick="event.stopPropagation(); handleChoice(34, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-34-N" onclick="event.stopPropagation(); handleChoice(34, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-35" data-num="35" data-name="Kindness" onclick="handleCardClick(event, 35)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">35</span>
+        <span class="val-title">Kindness</span>
+      </div>
+      <span class="status-tag" id="tag-35"></span>
+    </div>
+    <div class="val-desc">to be kind, compassionate, considerate, nurturing or caring towards myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-35-V" onclick="event.stopPropagation(); handleChoice(35, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-35-Q" onclick="event.stopPropagation(); handleChoice(35, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-35-N" onclick="event.stopPropagation(); handleChoice(35, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-36" data-num="36" data-name="Love" onclick="handleCardClick(event, 36)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">36</span>
+        <span class="val-title">Love</span>
+      </div>
+      <span class="status-tag" id="tag-36"></span>
+    </div>
+    <div class="val-desc">to act lovingly or affectionately towards myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-36-V" onclick="event.stopPropagation(); handleChoice(36, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-36-Q" onclick="event.stopPropagation(); handleChoice(36, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-36-N" onclick="event.stopPropagation(); handleChoice(36, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-37" data-num="37" data-name="Mindfulness" onclick="handleCardClick(event, 37)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">37</span>
+        <span class="val-title">Mindfulness</span>
+      </div>
+      <span class="status-tag" id="tag-37"></span>
+    </div>
+    <div class="val-desc">to be conscious of, open to, and curious about my here-and-now experience</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-37-V" onclick="event.stopPropagation(); handleChoice(37, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-37-Q" onclick="event.stopPropagation(); handleChoice(37, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-37-N" onclick="event.stopPropagation(); handleChoice(37, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-38" data-num="38" data-name="Order" onclick="handleCardClick(event, 38)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">38</span>
+        <span class="val-title">Order</span>
+      </div>
+      <span class="status-tag" id="tag-38"></span>
+    </div>
+    <div class="val-desc">to be orderly and organized</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-38-V" onclick="event.stopPropagation(); handleChoice(38, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-38-Q" onclick="event.stopPropagation(); handleChoice(38, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-38-N" onclick="event.stopPropagation(); handleChoice(38, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-39" data-num="39" data-name="Open-mindedness" onclick="handleCardClick(event, 39)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">39</span>
+        <span class="val-title">Open-mindedness</span>
+      </div>
+      <span class="status-tag" id="tag-39"></span>
+    </div>
+    <div class="val-desc">to think things through, see things from other’s points of view, and weigh evidence fairly</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-39-V" onclick="event.stopPropagation(); handleChoice(39, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-39-Q" onclick="event.stopPropagation(); handleChoice(39, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-39-N" onclick="event.stopPropagation(); handleChoice(39, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-40" data-num="40" data-name="Patience" onclick="handleCardClick(event, 40)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">40</span>
+        <span class="val-title">Patience</span>
+      </div>
+      <span class="status-tag" id="tag-40"></span>
+    </div>
+    <div class="val-desc">to wait calmly for what I want</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-40-V" onclick="event.stopPropagation(); handleChoice(40, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-40-Q" onclick="event.stopPropagation(); handleChoice(40, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-40-N" onclick="event.stopPropagation(); handleChoice(40, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-41" data-num="41" data-name="Persistence" onclick="handleCardClick(event, 41)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">41</span>
+        <span class="val-title">Persistence</span>
+      </div>
+      <span class="status-tag" id="tag-41"></span>
+    </div>
+    <div class="val-desc">to continue resolutely, despite problems or difficulties</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-41-V" onclick="event.stopPropagation(); handleChoice(41, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-41-Q" onclick="event.stopPropagation(); handleChoice(41, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-41-N" onclick="event.stopPropagation(); handleChoice(41, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-42" data-num="42" data-name="Pleasure" onclick="handleCardClick(event, 42)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">42</span>
+        <span class="val-title">Pleasure</span>
+      </div>
+      <span class="status-tag" id="tag-42"></span>
+    </div>
+    <div class="val-desc">to create and give pleasure to myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-42-V" onclick="event.stopPropagation(); handleChoice(42, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-42-Q" onclick="event.stopPropagation(); handleChoice(42, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-42-N" onclick="event.stopPropagation(); handleChoice(42, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-43" data-num="43" data-name="Power" onclick="handleCardClick(event, 43)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">43</span>
+        <span class="val-title">Power</span>
+      </div>
+      <span class="status-tag" id="tag-43"></span>
+    </div>
+    <div class="val-desc">to strongly influence or wield authority over others, e.g. taking charge, leading, organizing</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-43-V" onclick="event.stopPropagation(); handleChoice(43, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-43-Q" onclick="event.stopPropagation(); handleChoice(43, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-43-N" onclick="event.stopPropagation(); handleChoice(43, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-44" data-num="44" data-name="Reciprocity" onclick="handleCardClick(event, 44)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">44</span>
+        <span class="val-title">Reciprocity</span>
+      </div>
+      <span class="status-tag" id="tag-44"></span>
+    </div>
+    <div class="val-desc">to build relationships in which there is a fair balance of giving and taking</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-44-V" onclick="event.stopPropagation(); handleChoice(44, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-44-Q" onclick="event.stopPropagation(); handleChoice(44, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-44-N" onclick="event.stopPropagation(); handleChoice(44, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-45" data-num="45" data-name="Respect" onclick="handleCardClick(event, 45)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">45</span>
+        <span class="val-title">Respect</span>
+      </div>
+      <span class="status-tag" id="tag-45"></span>
+    </div>
+    <div class="val-desc">to be respectful towards myself or others; to be polite, considerate and show positive regard</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-45-V" onclick="event.stopPropagation(); handleChoice(45, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-45-Q" onclick="event.stopPropagation(); handleChoice(45, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-45-N" onclick="event.stopPropagation(); handleChoice(45, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-46" data-num="46" data-name="Responsibility" onclick="handleCardClick(event, 46)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">46</span>
+        <span class="val-title">Responsibility</span>
+      </div>
+      <span class="status-tag" id="tag-46"></span>
+    </div>
+    <div class="val-desc">to be responsible and accountable for my actions</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-46-V" onclick="event.stopPropagation(); handleChoice(46, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-46-Q" onclick="event.stopPropagation(); handleChoice(46, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-46-N" onclick="event.stopPropagation(); handleChoice(46, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-47" data-num="47" data-name="Romance" onclick="handleCardClick(event, 47)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">47</span>
+        <span class="val-title">Romance</span>
+      </div>
+      <span class="status-tag" id="tag-47"></span>
+    </div>
+    <div class="val-desc">to be romantic; to display and express love or strong affection</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-47-V" onclick="event.stopPropagation(); handleChoice(47, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-47-Q" onclick="event.stopPropagation(); handleChoice(47, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-47-N" onclick="event.stopPropagation(); handleChoice(47, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-48" data-num="48" data-name="Safety" onclick="handleCardClick(event, 48)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">48</span>
+        <span class="val-title">Safety</span>
+      </div>
+      <span class="status-tag" id="tag-48"></span>
+    </div>
+    <div class="val-desc">to secure, protect, or ensure safety of myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-48-V" onclick="event.stopPropagation(); handleChoice(48, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-48-Q" onclick="event.stopPropagation(); handleChoice(48, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-48-N" onclick="event.stopPropagation(); handleChoice(48, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-49" data-num="49" data-name="Self-awareness" onclick="handleCardClick(event, 49)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">49</span>
+        <span class="val-title">Self-awareness</span>
+      </div>
+      <span class="status-tag" id="tag-49"></span>
+    </div>
+    <div class="val-desc">to be aware of my own thoughts, feelings and actions</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-49-V" onclick="event.stopPropagation(); handleChoice(49, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-49-Q" onclick="event.stopPropagation(); handleChoice(49, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-49-N" onclick="event.stopPropagation(); handleChoice(49, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-50" data-num="50" data-name="Self-care" onclick="handleCardClick(event, 50)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">50</span>
+        <span class="val-title">Self-care</span>
+      </div>
+      <span class="status-tag" id="tag-50"></span>
+    </div>
+    <div class="val-desc">to look after my health and wellbeing, and get my needs met</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-50-V" onclick="event.stopPropagation(); handleChoice(50, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-50-Q" onclick="event.stopPropagation(); handleChoice(50, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-50-N" onclick="event.stopPropagation(); handleChoice(50, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-51" data-num="51" data-name="Self-development" onclick="handleCardClick(event, 51)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">51</span>
+        <span class="val-title">Self-development</span>
+      </div>
+      <span class="status-tag" id="tag-51"></span>
+    </div>
+    <div class="val-desc">to keep growing, advancing or improving in knowledge, skills, character, or life experience</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-51-V" onclick="event.stopPropagation(); handleChoice(51, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-51-Q" onclick="event.stopPropagation(); handleChoice(51, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-51-N" onclick="event.stopPropagation(); handleChoice(51, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-52" data-num="52" data-name="Self-control" onclick="handleCardClick(event, 52)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">52</span>
+        <span class="val-title">Self-control</span>
+      </div>
+      <span class="status-tag" id="tag-52"></span>
+    </div>
+    <div class="val-desc">to act in accordance with my own ideals</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-52-V" onclick="event.stopPropagation(); handleChoice(52, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-52-Q" onclick="event.stopPropagation(); handleChoice(52, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-52-N" onclick="event.stopPropagation(); handleChoice(52, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-53" data-num="53" data-name="Sensuality" onclick="handleCardClick(event, 53)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">53</span>
+        <span class="val-title">Sensuality</span>
+      </div>
+      <span class="status-tag" id="tag-53"></span>
+    </div>
+    <div class="val-desc">to create, explore and enjoy experiences that stimulate the five senses</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-53-V" onclick="event.stopPropagation(); handleChoice(53, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-53-Q" onclick="event.stopPropagation(); handleChoice(53, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-53-N" onclick="event.stopPropagation(); handleChoice(53, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-54" data-num="54" data-name="Sexuality" onclick="handleCardClick(event, 54)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">54</span>
+        <span class="val-title">Sexuality</span>
+      </div>
+      <span class="status-tag" id="tag-54"></span>
+    </div>
+    <div class="val-desc">to explore or express my sexuality</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-54-V" onclick="event.stopPropagation(); handleChoice(54, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-54-Q" onclick="event.stopPropagation(); handleChoice(54, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-54-N" onclick="event.stopPropagation(); handleChoice(54, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-55" data-num="55" data-name="Spirituality" onclick="handleCardClick(event, 55)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">55</span>
+        <span class="val-title">Spirituality</span>
+      </div>
+      <span class="status-tag" id="tag-55"></span>
+    </div>
+    <div class="val-desc">to connect with things bigger than myself</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-55-V" onclick="event.stopPropagation(); handleChoice(55, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-55-Q" onclick="event.stopPropagation(); handleChoice(55, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-55-N" onclick="event.stopPropagation(); handleChoice(55, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-56" data-num="56" data-name="Skilfulness" onclick="handleCardClick(event, 56)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">56</span>
+        <span class="val-title">Skilfulness</span>
+      </div>
+      <span class="status-tag" id="tag-56"></span>
+    </div>
+    <div class="val-desc">to continually practice and improve my skills, and apply myself fully when using them</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-56-V" onclick="event.stopPropagation(); handleChoice(56, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-56-Q" onclick="event.stopPropagation(); handleChoice(56, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-56-N" onclick="event.stopPropagation(); handleChoice(56, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-57" data-num="57" data-name="Supportiveness" onclick="handleCardClick(event, 57)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">57</span>
+        <span class="val-title">Supportiveness</span>
+      </div>
+      <span class="status-tag" id="tag-57"></span>
+    </div>
+    <div class="val-desc">to be supportive, helpful, encouraging, and available to myself or others</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-57-V" onclick="event.stopPropagation(); handleChoice(57, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-57-Q" onclick="event.stopPropagation(); handleChoice(57, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-57-N" onclick="event.stopPropagation(); handleChoice(57, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-58" data-num="58" data-name="Trust" onclick="handleCardClick(event, 58)">
+    <div class="card-top">
+      <div class="title-area">
+        <span class="val-num">58</span>
+        <span class="val-title">Trust</span>
+      </div>
+      <span class="status-tag" id="tag-58"></span>
+    </div>
+    <div class="val-desc">to be trustworthy; to be loyal, faithful, sincere, and reliable</div>
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-58-V" onclick="event.stopPropagation(); handleChoice(58, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-58-Q" onclick="event.stopPropagation(); handleChoice(58, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-58-N" onclick="event.stopPropagation(); handleChoice(58, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-59" data-num="59" data-name="Custom Value 1" onclick="handleCardClick(event, 59)">
+    <div class="card-top">
+      <div class="title-area" style="width:80%;">
+        <span class="val-num">59</span>
+        <input type="text" class="custom-field" id="custom-title-59" placeholder="Custom Value 1 Name" style="font-weight:700; margin-bottom:0;" onclick="event.stopPropagation()" oninput="syncCustomName(59)">
+      </div>
+      <span class="status-tag" id="tag-59"></span>
+    </div>
+    <input type="text" class="custom-field" id="custom-desc-59" oninput="saveState()" placeholder="Define behavior or description..." style="margin-top:6px;" onclick="event.stopPropagation()">
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-59-V" onclick="event.stopPropagation(); handleChoice(59, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-59-Q" onclick="event.stopPropagation(); handleChoice(59, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-59-N" onclick="event.stopPropagation(); handleChoice(59, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="value-card" id="card-60" data-num="60" data-name="Custom Value 2" onclick="handleCardClick(event, 60)">
+    <div class="card-top">
+      <div class="title-area" style="width:80%;">
+        <span class="val-num">60</span>
+        <input type="text" class="custom-field" id="custom-title-60" placeholder="Custom Value 2 Name" style="font-weight:700; margin-bottom:0;" onclick="event.stopPropagation()" oninput="syncCustomName(60)">
+      </div>
+      <span class="status-tag" id="tag-60"></span>
+    </div>
+    <input type="text" class="custom-field" id="custom-desc-60" oninput="saveState()" placeholder="Define behavior or description..." style="margin-top:6px;" onclick="event.stopPropagation()">
+    <div class="button-group">
+      <div class="choice-box box-v" id="box-60-V" onclick="event.stopPropagation(); handleChoice(60, 'V')">
+        <span class="box-letter">V</span>
+        <span class="box-label">Very</span>
+      </div>
+      <div class="choice-box box-q" id="box-60-Q" onclick="event.stopPropagation(); handleChoice(60, 'Q')">
+        <span class="box-letter">Q</span>
+        <span class="box-label">Quite</span>
+      </div>
+      <div class="choice-box box-n" id="box-60-N" onclick="event.stopPropagation(); handleChoice(60, 'N')">
+        <span class="box-letter">N</span>
+        <span class="box-label">Not</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-nav">
+  <button class="footer-btn btn-reset" onclick="resetAll()">Reset</button>
+  <button class="footer-btn btn-export" onclick="window.print()">Export to PDF</button>
+</div>
+
+<!-- Bottom Sheet Modal for Swapping V items -->
+<div class="modal-overlay" id="swap-modal">
+  <div class="modal-sheet">
+    <div class="sheet-header">
+      <div class="sheet-title">5 "Very Important" Limit Reached</div>
+      <div class="sheet-subtitle">Select which value to demote to <strong>Quite Important (Q)</strong> so the new value can be added.</div>
+    </div>
+    <div class="candidate-banner" id="candidate-banner">
+      Adding: <strong id="candidate-name"></strong>
+    </div>
+    <div class="swap-list" id="swap-list"></div>
+    <button class="sheet-cancel" onclick="closeSwapModal()">Keep Current 5 (Cancel)</button>
+  </div>
+</div>
+
+<div id="top5-panel" style="max-width:900px;margin:16px auto;padding:16px 20px;border-radius:14px;background:#fff7e6;border:2px solid #f0b429;font-family:inherit">
+  <div style="font-weight:800;font-size:1.1em;margin-bottom:8px">My Top 5 Values</div>
+  <ol id="top5-list" style="margin:0;padding-left:22px"></ol>
+  <div id="save-note" style="font-size:.8em;color:#777;margin-top:8px">Saved automatically on this device.</div>
+</div>
+<script>
+  const selections = {};
+  const V_LIMIT = 5;
+  let pendingSwapCandidate = null;
+
+  const valueNames = {};
+  document.querySelectorAll('.value-card').forEach(card => {
+    const num = parseInt(card.dataset.num);
+    valueNames[num] = card.dataset.name;
+  });
+
+  function syncCustomName(num) {
+    const input = document.getElementById(`custom-title-${num}`);
+    valueNames[num] = input.value.trim() || `Custom Value ${num - 58}`;
+  }
+
+  function getVList() {
+    return Object.keys(selections)
+      .map(k => parseInt(k))
+      .filter(num => selections[num] === 'V');
+  }
+
+  function handleCardClick(event, num) {
+    const current = selections[num];
+    if (current === 'V') {
+      delete selections[num];
+      applyCardUI(num, null);
+      updateTally();
+    } else {
+      handleChoice(num, 'V');
+    }
+  }
+
+  function handleChoice(num, letter) {
+    const current = selections[num];
+
+    if (current === letter) {
+      delete selections[num];
+      applyCardUI(num, null);
+      updateTally();
+      return;
+    }
+
+    if (letter === 'V') {
+      const vList = getVList();
+      if (vList.length >= V_LIMIT) {
+        pendingSwapCandidate = num;
+        openSwapModal(num, vList);
+        return;
+      }
+    }
+
+    selections[num] = letter;
+    applyCardUI(num, letter);
+    updateTally();
+  }
+
+  function applyCardUI(num, letter) {
+    const card = document.getElementById(`card-${num}`);
+    const tag = document.getElementById(`tag-${num}`);
+
+    ['V', 'Q', 'N'].forEach(l => {
+      const box = document.getElementById(`box-${num}-${l}`);
+      box.classList.remove('selected-v', 'selected-q', 'selected-n');
+    });
+    card.classList.remove('card-selected-v', 'card-selected-q', 'card-selected-n');
+    tag.className = 'status-tag';
+    tag.innerText = '';
+
+    if (letter) {
+      const activeBox = document.getElementById(`box-${num}-${letter}`);
+      activeBox.classList.add(`selected-${letter.toLowerCase()}`);
+      card.classList.add(`card-selected-${letter.toLowerCase()}`);
+      
+      tag.classList.add(`tag-${letter.toLowerCase()}`);
+      tag.innerText = letter === 'V' ? 'Very' : (letter === 'Q' ? 'Quite' : 'Not');
+    }
+  }
+
+  function updateTally() {
+    const vCount = getVList().length;
+    let qCount = 0, nCount = 0;
+    Object.values(selections).forEach(val => {
+      if (val === 'Q') qCount++;
+      if (val === 'N') nCount++;
+    });
+
+    const vBadge = document.getElementById('v-badge');
+    vBadge.innerText = `V: ${vCount} / ${V_LIMIT} Max`;
+    if (vCount >= V_LIMIT) {
+      vBadge.classList.add('limit-reached');
+    } else {
+      vBadge.classList.remove('limit-reached');
+    }
+
+    document.getElementById('stat-q').innerText = `Q: ${qCount}`;
+    document.getElementById('stat-n').innerText = `N: ${nCount}`;
+  }
+
+  function openSwapModal(candidateNum, vList) {
+    const name = valueNames[candidateNum] || `Item #${candidateNum}`;
+    document.getElementById('candidate-name').innerText = name;
+
+    const listContainer = document.getElementById('swap-list');
+    listContainer.innerHTML = '';
+
+    vList.forEach(existingNum => {
+      const existingName = valueNames[existingNum] || `Item #${existingNum}`;
+      const itemEl = document.createElement('div');
+      itemEl.className = 'swap-item';
+      itemEl.innerHTML = `
+        <div>
+          <div class="swap-info-title">${existingName}</div>
+          <div class="swap-info-desc">Demote to "Quite Important" (Q)</div>
+        </div>
+        <div class="swap-btn-label">Swap Out</div>
+      `;
+      itemEl.onclick = () => executeSwap(existingNum, candidateNum);
+      listContainer.appendChild(itemEl);
+    });
+
+    document.getElementById('swap-modal').style.display = 'flex';
+  }
+
+  function closeSwapModal() {
+    pendingSwapCandidate = null;
+    document.getElementById('swap-modal').style.display = 'none';
+  }
+
+  function executeSwap(oldVNum, newVNum) {
+    selections[oldVNum] = 'Q';
+    applyCardUI(oldVNum, 'Q');
+
+    selections[newVNum] = 'V';
+    applyCardUI(newVNum, 'V');
+
+    closeSwapModal();
+    updateTally();
+
+    const targetCard = document.getElementById(`card-${newVNum}`);
+    if (targetCard) {
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function resetAll() {
+    if (confirm("Reset all selections back to blank?")) {
+      Object.keys(selections).forEach(k => {
+        delete selections[k];
+        applyCardUI(k, null);
+      });
+      updateTally();
+    }
+  }
+
+  const STORE_KEY='valuesChecklist.v1';
+  function saveState(){
+    const custom={};
+    [59,60].forEach(n=>{const t=document.getElementById('custom-title-'+n),d=document.getElementById('custom-desc-'+n);custom[n]={t:t?t.value:'',d:d?d.value:''};});
+    try{localStorage.setItem(STORE_KEY,JSON.stringify({selections,custom}));}catch(e){document.getElementById('save-note').innerText='Could not save in this browser.';}
+    renderTop5();
+  }
+  function renderTop5(){
+    const ol=document.getElementById('top5-list');ol.innerHTML='';
+    const v=getVList().sort((a,b)=>a-b);
+    if(!v.length){ol.innerHTML='<li style="list-style:none;margin-left:-22px;color:#888">Tap V on up to five values.</li>';return;}
+    v.forEach(n=>{const li=document.createElement('li');li.textContent=valueNames[n]||('Item #'+n);ol.appendChild(li);});
+  }
+  function loadState(){
+    let s;try{s=JSON.parse(localStorage.getItem(STORE_KEY)||'null');}catch(e){}
+    if(s){
+      Object.entries(s.custom||{}).forEach(([n,c])=>{const t=document.getElementById('custom-title-'+n),d=document.getElementById('custom-desc-'+n);if(t){t.value=c.t||'';syncCustomName(+n);}if(d)d.value=c.d||'';});
+      Object.entries(s.selections||{}).forEach(([n,l])=>{selections[+n]=l;applyCardUI(+n,l);});
+    }
+    updateTally();renderTop5();
+  }
+  const _sync=syncCustomName; syncCustomName=function(n){_sync(n);saveState();};
+  const _tally=updateTally; updateTally=function(){_tally();saveState();};
+  loadState();
+</script>
+</body>
+</html>
